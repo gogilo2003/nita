@@ -7,11 +7,11 @@ const props = defineProps({
 const { photo, candidateName, idNumber, series, grade, testingCentre, status, uploadedBy, trade } = props.candidate
 </script>
 <template>
-    <tr class="border-b border-gray-950">
+    <tr class="">
         <td class="text-right p-3 border bg-gray-50" v-text="serial"></td>
-        <td class=" bg-gray-100">
-            <div class="w-24 h-24 p-2 border">
-                <img class="w-full h-full object-contain border rounded-lg" :src="photo" />
+        <td class="border bg-gray-100">
+            <div class="w-24 h-24 p-2 ">
+                <img class="w-full h-full object-contain rounded-lg" :src="photo" />
             </div>
         </td>
         <td class="border p-3 bg-gray-100 break-inside-avoid">

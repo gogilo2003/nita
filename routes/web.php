@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Candidate;
+use App\Models\Trade;
 use Inertia\Inertia;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
@@ -21,16 +22,43 @@ use Illuminate\Foundation\Application;
 
 Route::get('/', function () {
 
-    $candidates = Candidate::with('trade')->orderBy('trade_id', 'ASC')->get();
+    $trade = request()->input('trade');
+    $search = request()->input('search');
+    $trades = Trade::all()->map(fn ($tr) => [
+        "id" => $tr->id,
+        "code" => $tr->code,
+        "name" => $tr->name,
+    ]);
+
+    $candidates = Candidate::with('trade')->orderBy('trade_id', 'ASC')
+        ->when($trade, function ($query) use ($trade) {
+            $query->where('trade_id', $trade);
+        })
+        ->when($search, function ($query) use ($search) {
+            $str = sprintf("%%%s%%", $search);
+            $query->where('candidateName', 'LIKE', $str);
+        })
+        ->get();
+
+    if (request()->input('download')) {
+        $html = view('pdf.download', ['candidates' => $candidates])->render();
+
+        $pdf = \Illuminate\Support\Facades\App::make('snappy.pdf.wrapper');
+        $pdf->loadHTML($html);
+        return $pdf->inline();
+    }
 
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
-        'candidates' => $candidates
+        'candidates' => $candidates,
+        'trades' => $trades,
+        'trade' => $trade,
+        'search' => $search,
     ]);
-});
+})->name('welcome');
 
 Route::middleware([
     'auth:sanctum',
