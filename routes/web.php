@@ -3,9 +3,6 @@
 use App\Models\Candidate;
 use App\Models\Trade;
 use Inertia\Inertia;
-use GuzzleHttp\Client;
-use GuzzleHttp\Cookie\CookieJar;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 
